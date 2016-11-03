@@ -7,7 +7,6 @@ import com.typesafe.sbt.SbtScalariform.ScalariformKeys
 
 import scala.io.Source.fromFile
 
-val scalazVersion: String = "7.2.1"
 val specs2Version: String = "3.8.4"
 val playVersion: String = "2.5.8"
 val enumeratumVersion = "1.4.13"
@@ -28,11 +27,10 @@ val appDependencies: Seq[sbt.ModuleID] = Seq(
   "com.softwaremill.macwire" %% "macros" % "2.2.0",
   "com.beachape" %% "enumeratum" % enumeratumVersion,
   "com.beachape" %% "enumeratum-play" % enumeratumVersion,
-  "org.scalaz" %% "scalaz-core" % scalazVersion,
-  "org.scalaz" %% "scalaz-concurrent" % scalazVersion,
-  "org.scalaz" %% "scalaz-effect" % scalazVersion,
   "org.asynchttpclient" % "async-http-client" % "2.0.2",
-  "org.slf4j" % "log4j-over-slf4j" % "1.7.13"
+  "org.slf4j" % "log4j-over-slf4j" % "1.7.13",
+  "com.typesafe.akka" %% "akka-actor" % "2.4.9",
+  "com.typesafe.akka" %% "akka-slf4j" % "2.4.9"
 ).map(_.exclude("log4j", "log4j")).map(_.exclude("commons-logging", "commons-logging"))
 
 val javaVersion = "1.8"

@@ -15,7 +15,7 @@ trait JobsModule {
 
   implicit def configuration: Configuration
 
-  implicit def materializer: Materializer
+  implicit val materializer: Materializer
 
   lazy val jobsSupervisorActor = {
     actorSystem.actorOf(Props(wire[JobsSupervisorActor]))
