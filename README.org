@@ -1,0 +1,16 @@
+* Carjump challenge
+
+** Dependencies
+   You will need to install [[http://www.scala-sbt.org/][SBT]] which requires a JDK installation.
+
+** Run the tests:
+#+BEGIN_SRC
+sbt test
+#+END_SRC
+
+** Run the application:
+#+BEGIN_SRC
+sbt run
+#+END_SRC
+
+** Design decisions

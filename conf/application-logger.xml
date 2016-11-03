@@ -1,0 +1,47 @@
+<configuration>
+  <conversionRule conversionWord="coloredLevel" converterClass="play.api.Logger$ColoredLevel"/>
+
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <file>${application.home}/logs/service.log</file>
+    <encoder>
+      <pattern>%d{yyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n%xThrowable{full}</pattern>
+      <immediateFlush>true</immediateFlush>
+    </encoder>
+  </appender>
+
+  <appender name="JOBS_FILE" class="ch.qos.logback.core.FileAppender">
+    <file>${application.home}/logs/jobs.log</file>
+    <encoder>
+      <pattern>%d{yyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n%xThrowable{full}</pattern>
+      <immediateFlush>true</immediateFlush>
+    </encoder>
+  </appender>
+
+  <appender name="ACCESS_FILE" class="ch.qos.logback.core.FileAppender">
+    <file>${application.home}/logs/access.log</file>
+    <encoder>
+      <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS ZZZZ} %message%n</pattern>
+      <immediateFlush>true</immediateFlush>
+    </encoder>
+  </appender>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{yyy-MM-dd HH:mm:ss.SSS} %coloredLevel %logger{36} - %msg%n%xThrowable{full}</pattern>
+      <immediateFlush>true</immediateFlush>
+    </encoder>
+  </appender>
+
+  <logger name="access" level="DEBUG" additivity="false">
+    <appender-ref ref="ACCESS_FILE"/>
+  </logger>
+
+  <logger name="jobs" level="DEBUG" additivity="false">
+    <appender-ref ref="JOBS_FILE"/>
+  </logger>
+
+  <root level="INFO">
+    <appender-ref ref="STDOUT"/>
+    <appender-ref ref="FILE"/>
+  </root>
+</configuration>

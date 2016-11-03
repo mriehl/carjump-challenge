@@ -1,0 +1,12 @@
+/logs/
+/modules
+/project/project
+/project/target
+/target
+server.pid
+*.iml
+*.eml
+.cache
+.ensime*
+/project/local.sbt
+.DS_Store
