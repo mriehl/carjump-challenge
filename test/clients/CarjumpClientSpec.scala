@@ -20,7 +20,7 @@ class CarjumpClientSpec extends Specification with FutureAwaits with DefaultAwai
         case (accu, s) ⇒
           s :: accu
       }
-      wireMockServer.stubFor(get(urlEqualTo("/test?a=b"))
+      wireMockServer.stubFor(get(urlEqualTo("/A"))
         .withHeader("Accept", WireMock.equalTo("text/plain"))
         .willReturn(aResponse()
           .withStatus(OK)

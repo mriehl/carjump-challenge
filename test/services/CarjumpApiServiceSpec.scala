@@ -17,7 +17,7 @@ class CarjumpApiServiceSpec extends Specification with FutureAwaits with Default
   "A carjump api service" should {
 
     "fetch compressed data" in new WiremockScope {
-      wireMockServer.stubFor(get(urlEqualTo("/test?a=b"))
+      wireMockServer.stubFor(get(urlEqualTo("/A"))
         .withHeader("Accept", WireMock.equalTo("text/plain"))
         .willReturn(aResponse()
           .withStatus(OK)

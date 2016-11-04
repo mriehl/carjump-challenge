@@ -3,7 +3,9 @@ package jobs
 import akka.actor._
 import jobs.JobsSupervisorActor.{ JobDispatcherName, StartAll, StopAll }
 
-class JobsSupervisorActor() extends Actor {
+class JobsSupervisorActor(
+    fetchingActorThunk: ⇒ FetchingActor
+) extends Actor {
 
   override val supervisorStrategy =
     OneForOneStrategy() {
@@ -13,14 +15,16 @@ class JobsSupervisorActor() extends Actor {
       case _: Exception                    ⇒ SupervisorStrategy.Resume
     }
 
+  val fetchingActor = context.actorOf(Props(fetchingActorThunk).withDispatcher("cj-dispatcher"))
+
   def receive: PartialFunction[Any, Unit] = {
-    case StartAll ⇒ ()
-    case StopAll  ⇒ ()
+    case StartAll ⇒ fetchingActor ! FetchingActor.Start
+    case StopAll  ⇒ fetchingActor ! FetchingActor.Stop
   }
 }
 
 object JobsSupervisorActor {
   case object StartAll
   case object StopAll
-  val JobDispatcherName = "carjump-dispatcher"
+  val JobDispatcherName = "cj-dispatcher"
 }

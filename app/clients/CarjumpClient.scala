@@ -1,12 +1,12 @@
 package clients
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 import akka.NotUsed
 import akka.stream.Materializer
-import akka.stream.scaladsl.{Flow, Framing, Source}
+import akka.stream.scaladsl.{ Flow, Framing, Source }
 import akka.util.ByteString
-import play.api.libs.ws.{StreamedResponse, WSClient}
+import play.api.libs.ws.{ StreamedResponse, WSClient }
 import util.SLF4JLogging
 
 class CarjumpClient(
@@ -18,8 +18,7 @@ class CarjumpClient(
 
   def fetchData(): Future[Source[String, Any]] = {
     val futureStreamedResponse = wsClient
-      .url(s"$carjumpBaseUrl/test")
-      .withQueryString("a" → "b")
+      .url(s"$carjumpBaseUrl/A")
       .withHeaders("Accept" → "text/plain")
       .withMethod("GET")
       .stream()

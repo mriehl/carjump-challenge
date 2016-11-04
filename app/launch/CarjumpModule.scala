@@ -24,8 +24,6 @@ trait CarjumpModule
   def startJobs(): Unit = {
     jobsSupervisorActor ! JobsSupervisorActor.StartAll
 
-    // start jobs here
-
     applicationLifecycle.addStopHook(() ⇒ stopActors())
   }
 
