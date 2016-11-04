@@ -1,9 +1,10 @@
 package clients
 
+import akka.NotUsed
 import akka.stream.Materializer
-import akka.stream.scaladsl.Sink
+import akka.stream.scaladsl.{ Flow, Framing, Sink, Source }
 import akka.util.ByteString
-import play.api.libs.ws.WSClient
+import play.api.libs.ws.{ StreamedResponse, WSClient }
 import scala.concurrent.{ ExecutionContext, Future }
 import util.SLF4JLogging
 
@@ -12,17 +13,19 @@ class CarjumpClient(
     carjumpBaseUrl: CarjumpBaseUrl
 )(implicit val ec: ExecutionContext, mat: Materializer) extends SLF4JLogging {
 
-  def fetchData(): Future[Seq[String]] = {
+  private val delimiterFlow: Flow[ByteString, ByteString, NotUsed] = Framing.delimiter(ByteString("\n"), 10, true)
+
+  def fetchData(): Future[Source[String, Any]] = {
     val futureStreamedResponse = wsClient
       .url(s"$carjumpBaseUrl/test")
       .withQueryString("a" → "b")
       .withHeaders("Accept" → "text/plain")
       .withMethod("GET")
       .stream()
-    futureStreamedResponse.flatMap { response ⇒
-      response.body.runWith(Sink.fold[Seq[String], ByteString](Seq.empty[String]) {
-        case (accu, bytes) ⇒ accu ++ bytes.utf8String.split("\n")
-      })
+    futureStreamedResponse.map { response ⇒
+      response.body
+        .via(delimiterFlow)
+        .map(_.utf8String)
     }
   }
 }
