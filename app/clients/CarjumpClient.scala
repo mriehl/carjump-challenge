@@ -1,11 +1,12 @@
 package clients
 
+import scala.concurrent.{ExecutionContext, Future}
+
 import akka.NotUsed
 import akka.stream.Materializer
-import akka.stream.scaladsl.{ Flow, Framing, Sink, Source }
+import akka.stream.scaladsl.{Flow, Framing, Source}
 import akka.util.ByteString
-import play.api.libs.ws.{ StreamedResponse, WSClient }
-import scala.concurrent.{ ExecutionContext, Future }
+import play.api.libs.ws.{StreamedResponse, WSClient}
 import util.SLF4JLogging
 
 class CarjumpClient(
