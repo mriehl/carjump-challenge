@@ -23,6 +23,13 @@ sbt run
 #+END_SRC
 
 ** Design decisions
+*** I did not implement the compression as requested.
+    * Having a Seq[A] in the compression signature requires me to have Seq[A] in memory, so why would I compress it?
+    * Implementing decompress is trivial but I left it as ??? because it is actually not useful for the task at hand.
+      We are searching for an index in the RLE'd data and it makes no sense to unpack the whole thing just to find an element.
+      I implemented a tailrecursion that finds the element at the requested index in max O(n) and with small memory footprint.
+      The gist is that given we know the size of each chunk it is easy to find a specific index without traversing all of the repeated
+      elements (that's the point of RLE imho!)
 
 * Exercise text
 
