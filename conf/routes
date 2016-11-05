@@ -1,1 +1,2 @@
 GET           /internal/status                                                                     controllers.StatusController.status
+GET           /:index                                                                              controllers.IndexQueryController.index(index: Int)
