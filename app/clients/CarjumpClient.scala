@@ -22,10 +22,18 @@ class CarjumpClient(
       .withHeaders("Accept" → "text/plain")
       .withMethod("GET")
       .stream()
-    futureStreamedResponse.map { response ⇒
-      response.body
-        .via(delimiterFlow)
-        .map(_.utf8String)
+    futureStreamedResponse.flatMap { response ⇒
+      val status = response.headers.status
+      if (status >= 400)
+        Future.failed(new CarjumpApiException(s"Carjump API call failed: got status $status"))
+      else
+        Future.successful(
+          response.body
+            .via(delimiterFlow)
+            .map(_.utf8String)
+        )
     }
   }
 }
+
+case class CarjumpApiException(msg: String) extends Exception(msg)

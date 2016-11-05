@@ -1,9 +1,11 @@
 package clients
 
 import akka.actor.ActorSystem
+import akka.stream.scaladsl.Sink
 import akka.stream.{ ActorMaterializer, Materializer }
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
+import java.net.URL
 import org.specs2.mutable.After
 import org.specs2.specification.Scope
 import play.api.libs.ws.WSClient
@@ -20,6 +22,7 @@ trait WiremockScope extends After {
 
   lazy val port = 13089
   lazy val wireMockServer: WireMockServer = new WireMockServer(wireMockConfig().port(port))
+  lazy val client = new CarjumpClient(wsClient, CarjumpBaseUrl(new URL(s"http://localhost:$port")))
   wireMockServer.start()
 
   override def after: Unit = {

@@ -10,7 +10,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.{ matching ⇒ wmatching 
 import play.api.http.Status.OK
 import play.api.test.{ DefaultAwaitTimeout, FutureAwaits }
 
-class CarjumpApiServiceSpec extends Specification with FutureAwaits with DefaultAwaitTimeout {
+class CarjumpApiServiceIntegrationSpec extends Specification with FutureAwaits with DefaultAwaitTimeout {
 
   sequential
 
@@ -23,7 +23,7 @@ class CarjumpApiServiceSpec extends Specification with FutureAwaits with Default
           .withStatus(OK)
           .withHeader("Content-Type", "text/plain")
           .withBody("a\na\na\nb\nb\nc\na\na\n")))
-      val client = new CarjumpClient(wsClient, CarjumpBaseUrl(new URL(s"http://localhost:$port")))
+
       import com.softwaremill.macwire._
       val carjumpService: CarjumpApiService = wire[CarjumpApiService]
 

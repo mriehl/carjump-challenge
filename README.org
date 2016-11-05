@@ -6,6 +6,12 @@ since it relies on plain text any other editor will do with some minor limitatio
 ** Dependencies
    You will need to install [[http://www.scala-sbt.org/][SBT]] which requires a JDK installation.
 
+   I recommend to start the SBT shell with additional JVM options like this:
+
+   #+BEGIN_SRC
+   sbt -J-Xms512M -J-Xmx1024M -J-Xss1M -J-XX:+CMSClassUnloadingEnabled
+   #+END_SRC
+
 ** Run the tests:
 #+BEGIN_SRC
 sbt test
