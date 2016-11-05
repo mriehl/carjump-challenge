@@ -45,6 +45,8 @@ object CarjumpApiService {
 
   @tailrec
   def search[A](compressed: List[Compressed[A]], wantedIndex: Int): A = (compressed, wantedIndex) match {
+    case (_, illegalIndex) if illegalIndex < 0 ⇒
+      throw new IndexNotFoundException()
     case (Nil, _) ⇒
       throw new IndexNotFoundException()
     case (chunks, wantedIndex: Int) if wantedIndex <= chunks.head.width - 1 ⇒
@@ -52,7 +54,7 @@ object CarjumpApiService {
     case (Single(_) :: tail, wantedIndex: Int) ⇒
       search(tail, wantedIndex - 1)
     case (Repeat(chunkSize, _) :: tail, wantedIndex: Int) ⇒
-      search(tail, wantedIndex - chunkSize)
+      search(tail, Math.max(wantedIndex - chunkSize, 0))
   }
 }
 
