@@ -17,19 +17,40 @@ since it relies on plain text any other editor will do with some minor limitatio
 sbt test
 #+END_SRC
 
+   This will execute unit and integration tests.
+
 ** Run the application:
 #+BEGIN_SRC
 sbt run
+#+END_SRC
+   Now you can send requests to the application:
+
+#+BEGIN_SRC
+curl -vvv http://localhost:9000/42
 #+END_SRC
 
 ** Design decisions
 *** I did not implement the compression as requested.
     * Having a Seq[A] in the compression signature requires me to have Seq[A] in memory, so why would I compress it?
+      I am using akka streams to compress the data without loading everything into memory at once, so I changed the signature accordingly.
     * Implementing decompress is trivial but I left it as ??? because it is actually not useful for the task at hand.
-      We are searching for an index in the RLE'd data and it makes no sense to unpack the whole thing just to find an element.
-      I implemented a tailrecursion that finds the element at the requested index in max O(n) and with small memory footprint.
-      The gist is that given we know the size of each chunk it is easy to find a specific index without traversing all of the repeated
+      We are searching for an index in the RLE'd data and it makes no sense to unpack the whole thing in memory just to find an element.
+      I implemented a tailrecursive function that finds the element at the requested index in max O(n) and with small memory footprint.
+      The gist is that given we know the size of each RLE chunk it is easy to find a specific index without traversing all of the repeated
       elements (that's the point of RLE imho!)
+*** The actor
+    - I added a supervisor to ensure resilience in case the fetching actor crashes (except for critical cases like out of memory errors, the
+      supervisor will restart the child)
+    - I didn't implement a separate actor for cache. It's more work and IMHO it doesn't bring any real value.
+    - I am not testing the actor FSM (could use akka testkit for that) because it is very simple.
+    - I am not blocking the application until the actor is able to fetch the data. While this could be done there is a case to be made that
+      the application should handle this error gracefully - if we block until we have cached data then the application can be started if and only
+      if the carjump challenge api is working. That's a lot of coupling. For a production app I would evaluate whether the application can perform other work
+      or if everything is degraded and decide from there. In our challenge case the status controller still works for example.
+
+*** Tests
+    I have some unit tests where it makes sense but mainly since the problem domain is so narrow I rely on wiremock tests to ensure that the desired functionality
+    works end to end (esp. the akka streams code). I didn't write tests for the controller because it's behaviour is so simple and well-defined.
 
 * Exercise text
 
