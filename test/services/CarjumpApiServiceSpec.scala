@@ -22,7 +22,8 @@ class CarjumpApiServiceSpec extends Specification {
     }
     "complain when index is out of bounds" in {
       val compressed = Seq.empty[Compressed[String]]
-      compressed atIndex 0 must throwA[IndexOutOfBoundsException]
+      compressed atIndex 0 must throwA[IndexNotFoundException]
+      compressed atIndex 42 must throwA[IndexNotFoundException]
     }
   }
 }

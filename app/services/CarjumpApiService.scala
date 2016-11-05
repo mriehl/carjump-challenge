@@ -45,8 +45,8 @@ object CarjumpApiService {
 
   @tailrec
   def search[A](compressed: List[Compressed[A]], wantedIndex: Int): A = (compressed, wantedIndex) match {
-    case (Nil, wantedIndex: Int) if wantedIndex <= 0 ⇒
-      throw new IndexOutOfBoundsException()
+    case (Nil, _) ⇒
+      throw new IndexNotFoundException()
     case (chunks, wantedIndex: Int) if wantedIndex <= chunks.head.width - 1 ⇒
       chunks.head.value
     case (Single(_) :: tail, wantedIndex: Int) ⇒
@@ -73,3 +73,5 @@ case class Repeat[A](count: Int, element: A) extends Compressed[A] {
   override def value: A = element
   override def width: Int = count
 }
+
+class IndexNotFoundException() extends Exception
