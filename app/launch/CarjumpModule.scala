@@ -1,5 +1,6 @@
 package launch
 
+import clients.UnconfiguredApplicationException
 import scala.concurrent.{ ExecutionContext, Future, blocking }
 
 import clients.ClientsModule
@@ -17,6 +18,7 @@ trait CarjumpModule
     with ClientsModule
     with SLF4JLogging {
 
+  def mandatoryPropertyMissing(path: String): Nothing = throw new UnconfiguredApplicationException(s"Missing mandatory property in application.conf: '$path'")
   def configuration: Configuration
   def applicationLifecycle: ApplicationLifecycle
   override implicit val executionContext: ExecutionContext

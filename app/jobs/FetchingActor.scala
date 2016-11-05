@@ -8,7 +8,7 @@ import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.duration._
 import scala.util.control.NonFatal
 
-class FetchingActor(interval: FiniteDuration, apiService: CarjumpApiService) extends Actor with ActorLogging with FSM[FetchingActor.State, FetchingActor.Data] {
+class FetchingActor(interval: CarjumpFetchInterval, apiService: CarjumpApiService) extends Actor with ActorLogging with FSM[FetchingActor.State, FetchingActor.Data] {
   import FetchingActor._
   implicit val ec = context.dispatcher
 
@@ -16,8 +16,8 @@ class FetchingActor(interval: FiniteDuration, apiService: CarjumpApiService) ext
 
   when(Stopped) {
     case Event(Start, _) ⇒
-      log.info("Fetching actor starting up..")
-      val scheduleHook = context.system.scheduler.schedule(1.seconds, interval)(self ! Fetch)
+      log.info(s"Fetching actor starting up, re-fetch every $interval")
+      val scheduleHook = context.system.scheduler.schedule(1.seconds, interval.value)(self ! Fetch)
       goto(Idle) using FetchData(scheduleHook, Seq.empty)
 
     case Event(CacheValue, _) ⇒

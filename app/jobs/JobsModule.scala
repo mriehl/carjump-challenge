@@ -18,11 +18,16 @@ trait JobsModule {
   implicit def configuration: Configuration
 
   implicit val materializer: Materializer
-
+  def mandatoryPropertyMissing(path: String): Nothing
   def carjumpClient: CarjumpClient
   def apiService: CarjumpApiService
-  import scala.concurrent.duration._
-  val duration = 30.seconds
+
+  lazy val fetchInterval: CarjumpFetchInterval = {
+    import scala.concurrent.duration._
+    val path = "carjump.fetchIntervalSeconds"
+    val fetchIntervalSeconds = configuration.getInt(path).getOrElse(mandatoryPropertyMissing(path))
+    CarjumpFetchInterval(fetchIntervalSeconds.seconds)
+  }
 
   lazy val jobsSupervisorActor = {
     def fetchingActor = wire[FetchingActor]

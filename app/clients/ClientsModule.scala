@@ -12,11 +12,10 @@ trait ClientsModule {
   def wsClient: WSClient
 
   implicit def configuration: Configuration
+  def mandatoryPropertyMissing(path: String): Nothing
 
   implicit val executionContext: ExecutionContext
   implicit val materializer: Materializer
-
-  private def mandatoryPropertyMissing(path: String): Nothing = throw new UnconfiguredApplicationException(s"Missing mandatory property in application.conf: '$path'")
 
   lazy val carjumpBaseUrl: CarjumpBaseUrl = CarjumpBaseUrl(new URL(configuration.getString(carjumpUrlPath)
     .getOrElse(mandatoryPropertyMissing(carjumpUrlPath))))
