@@ -27,7 +27,8 @@ class CarjumpApiService(carjumpClient: CarjumpClient)(implicit ec: ExecutionCont
             Single(elementToCompress) :: otherCompresseds
         }
     }
-    // need to reverse because we RLE'd from right to left (appending is generally O(n))
+    // need to reverse because we prepended RLE'd chunks from right to left
+    // appending is generally O(n) thus the choice of List with cons
     val correctCompression = reversedCompressionSink.mapMaterializedValue(_.map(_.toSeq.reverse))
     source.runWith(correctCompression)
   }
