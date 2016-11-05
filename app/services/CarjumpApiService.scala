@@ -49,8 +49,8 @@ object CarjumpApiService {
       throw new IndexNotFoundException()
     case (Nil, _) ⇒
       throw new IndexNotFoundException()
-    case (chunks, wantedIndex: Int) if wantedIndex <= chunks.head.width - 1 ⇒
-      chunks.head.value
+    case (head :: _, wantedIndex: Int) if wantedIndex <= head.width - 1 ⇒
+      head.value
     case (Single(_) :: tail, wantedIndex: Int) ⇒
       search(tail, wantedIndex - 1)
     case (Repeat(chunkSize, _) :: tail, wantedIndex: Int) ⇒
