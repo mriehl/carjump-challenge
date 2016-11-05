@@ -2,6 +2,7 @@ package jobs
 
 import akka.actor.{ Actor, ActorLogging, Cancellable, FSM }
 import scala.concurrent.Await
+import scala.util.Try
 import services.{ CarjumpApiService, Compressed }
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.duration._
@@ -18,12 +19,15 @@ class FetchingActor(interval: FiniteDuration, apiService: CarjumpApiService) ext
       log.info("Fetching actor starting up..")
       val scheduleHook = context.system.scheduler.schedule(1.seconds, interval)(self ! Fetch)
       goto(Idle) using FetchData(scheduleHook, Seq.empty)
+
+    case Event(CacheValue, _) ⇒
+      sender() ! Seq.empty[Compressed[String]]
+      stay()
   }
 
   when(Idle) {
     case Event(Fetch, FetchData(hook, emptyCache)) ⇒
       log.info("Fetching initial data...")
-      log.info("current: " + emptyCache)
       val transition = try {
         val cache = Await.result(apiService.fetchCompressedData(), 3.seconds)
         log.info(cache.toString)
@@ -35,6 +39,10 @@ class FetchingActor(interval: FiniteDuration, apiService: CarjumpApiService) ext
       }
       transition
 
+    case Event(CacheValue, _) ⇒
+      sender() ! Seq.empty[Compressed[String]]
+      stay()
+
     case Event(Stop, FetchData(hook, _)) ⇒
       hook.cancel()
       goto(Stopped) using Uninitialized
@@ -43,18 +51,17 @@ class FetchingActor(interval: FiniteDuration, apiService: CarjumpApiService) ext
   when(IdleWithCache) {
     case Event(Fetch, FetchData(hook, oldCache)) ⇒
       log.info("Fetching data to replace existing cache..")
-      try {
-        val newCache = Await.result(apiService.fetchCompressedData(), 3.seconds)
-        log.info(newCache.toString)
-        stay() using FetchData(hook, newCache)
-      } catch {
-        case NonFatal(e) ⇒ log.error(e.getMessage)
-      }
-      stay() using FetchData(hook, oldCache)
+      log.info("Current: " + oldCache)
+      val newCache = Try(Await.result(apiService.fetchCompressedData(), 3.seconds))
+      stay() using FetchData(hook, newCache.getOrElse(oldCache))
 
     case Event(Stop, FetchData(hook, _)) ⇒
       hook.cancel()
       goto(Stopped) using Uninitialized
+
+    case Event(CacheValue, FetchData(_, cache)) ⇒
+      sender() ! cache
+      stay()
   }
 }
 
@@ -63,6 +70,7 @@ object FetchingActor {
   case object Start extends Msg
   case object Stop extends Msg
   case object Fetch extends Msg
+  case object CacheValue extends Msg
 
   sealed trait State
   case object Idle extends State

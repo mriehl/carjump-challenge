@@ -15,7 +15,7 @@ class JobsSupervisorActor(
       case _: Exception                    ⇒ SupervisorStrategy.Resume
     }
 
-  val fetchingActor = context.actorOf(Props(fetchingActorThunk).withDispatcher("cj-dispatcher"))
+  val fetchingActor = context.actorOf(Props(fetchingActorThunk).withDispatcher("cj-dispatcher"), "fetch")
 
   def receive: PartialFunction[Any, Unit] = {
     case StartAll ⇒ fetchingActor ! FetchingActor.Start

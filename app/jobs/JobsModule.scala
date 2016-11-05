@@ -26,6 +26,6 @@ trait JobsModule {
 
   lazy val jobsSupervisorActor = {
     def fetchingActor = wire[FetchingActor]
-    actorSystem.actorOf(Props(wire[JobsSupervisorActor]))
+    actorSystem.actorOf(Props(wire[JobsSupervisorActor]), "supervisor")
   }
 }
