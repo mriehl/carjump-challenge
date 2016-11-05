@@ -21,6 +21,6 @@ class IndexQueryController()(implicit val ec: ExecutionContext, implicit val as:
     val futureCompressedData = ask(fetchingActorSelection, FetchingActor.CacheValue).mapTo[Seq[Compressed[String]]]
     futureCompressedData
       .map(compressedData ⇒ Try(compressedData atIndex index))
-      .map(_.map(dataAtIndex ⇒ Ok(dataAtIndex)).getOrElse(Ok(s"Index $index out of bounds, or no cached data yet")))
+      .map(_.map(dataAtIndex ⇒ Ok(dataAtIndex)).getOrElse(NotFound(s"Index $index out of bounds, or no cached data yet")))
   }
 }
